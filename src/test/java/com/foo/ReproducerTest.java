@@ -9,7 +9,6 @@ import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import dev.morphia.mapping.DiscriminatorFunction;
 import dev.morphia.mapping.MapperOptions;
-import dev.morphia.query.Query;
 import dev.morphia.query.experimental.filters.Filters;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,17 +19,23 @@ public class ReproducerTest extends BottleRocketTest {
     private Datastore datastore;
 
     public ReproducerTest() {
-        MongoClient mongo = getMongoClient();
         MongoDatabase database = getDatabase();
         database.drop();
 
-        MapperOptions mapper = MapperOptions.builder()
-                                            .discriminatorKey("className")
-                                            .discriminator(DiscriminatorFunction.className())
-                                            .enablePolymorphicQueries(true)
-                                            .build();
+        datastore = createDatastore();
+    }
 
-        datastore = Morphia.createDatastore(mongo, getDatabase().getName(), mapper);
+    private Datastore createDatastore() {
+        MongoClient mongo = getMongoClient();
+        MongoDatabase database = getDatabase();
+
+        MapperOptions mapper = MapperOptions.builder()
+                .discriminatorKey("className")
+                .discriminator(DiscriminatorFunction.className())
+                .enablePolymorphicQueries(true)
+                .build();
+
+        return Morphia.createDatastore(mongo, database.getName(), mapper);
     }
 
     @NotNull
@@ -46,36 +51,24 @@ public class ReproducerTest extends BottleRocketTest {
     }
 
     @Test
-    public void reproduceWorking() {
-        // arrange
-        long _id = 1L;
-        String clientOneAlias = "client1Alias";
-        datastore.save(new SubClassA(_id, clientOneAlias));
-
-        // act
-        AbstractSuperClass entity = datastore.find(AbstractSuperClass.class)
-                                             .filter(Filters.eq("_id", _id))
-                                             .first();
-
-        Assert.assertNotNull("client should be an instance of com.foo.SubClassA but is null", entity);
-        Assert.assertTrue("client should be an instance of com.foo.SubClassA but its " + entity.getClass(), entity instanceof SubClassA);
-    }
-    
-    @Test
     public void reproduce() {
         // arrange
         long _id = 1L;
         String clientOneAlias = "client1Alias";
-        datastore.save(new SubClassA(_id, clientOneAlias));
+        initializeDataInDB(_id, clientOneAlias);
 
         // act
+        datastore = createDatastore();
         AbstractSuperClass entity = datastore.find(AbstractSuperClass.class)
-                                             .filter(
-                                                  Filters.eq(AbstractSuperClass.CLIENT_ALIAS_PROPERTY, clientOneAlias)
-                                             )
+                                             .filter(Filters.eq(AbstractSuperClass.CLIENT_ALIAS_PROPERTY, clientOneAlias))
                                              .first();
         // assert
         Assert.assertNotNull("client should be an instance of com.foo.SubClassA but is null", entity);
         Assert.assertTrue("client should be an instance of com.foo.SubClassA but its " + entity.getClass(), entity instanceof SubClassA);
+    }
+
+    private void initializeDataInDB(long _id, String clientOneAlias) {
+        datastore = createDatastore();
+        datastore.save(new SubClassA(_id, clientOneAlias));
     }
 }

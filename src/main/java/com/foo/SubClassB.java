@@ -1,8 +1,5 @@
 package com.foo;
 
-import dev.morphia.annotations.Entity;
-
-//@Entity("test_inheritance")
 public class SubClassB extends AbstractSuperClass {
     
     private String subclassBField = "SubClassB";

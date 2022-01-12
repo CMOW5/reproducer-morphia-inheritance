@@ -5,7 +5,6 @@ import dev.morphia.annotations.Id;
 import dev.morphia.annotations.Property;
 
 @Entity("test_inheritance")
-//@Entity()
 public class AbstractSuperClass {
 
     public static final String CLIENT_ALIAS_PROPERTY = "clientAlias";
