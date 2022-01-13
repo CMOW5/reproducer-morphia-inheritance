@@ -8,8 +8,8 @@ public class SubClassA extends AbstractSuperClass {
         super();
     }
     
-    public SubClassA(long id, String clientAlias) {
-        super(id, clientAlias);
+    public SubClassA(long id, String name) {
+        super(id, name);
     }
 
     public String getSubclassAField() {

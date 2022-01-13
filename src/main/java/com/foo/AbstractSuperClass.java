@@ -7,20 +7,20 @@ import dev.morphia.annotations.Property;
 @Entity("test_inheritance")
 public abstract class AbstractSuperClass {
 
-    public static final String CLIENT_ALIAS_PROPERTY = "clientAlias";
+    public static final String CLIENT_NAME_PROPERTY = "name";
 
     public AbstractSuperClass() {}
     
-    public AbstractSuperClass(long id, String clientAlias) {
+    public AbstractSuperClass(long id, String name) {
         this.id = id;
-        this.clientAlias = clientAlias;
+        this.name = name;
     }
 
     @Id
     private long id;
     
-    @Property(CLIENT_ALIAS_PROPERTY)
-    private String clientAlias;
+    @Property(CLIENT_NAME_PROPERTY)
+    private String name;
 
     public long getId() {
         return id;
@@ -30,11 +30,11 @@ public abstract class AbstractSuperClass {
         this.id = id;
     }
 
-    public String getClientAlias() {
-        return clientAlias;
+    public String getName() {
+        return name;
     }
 
-    public void setClientAlias(String clientAlias) {
-        this.clientAlias = clientAlias;
+    public void setName(String name) {
+        this.name = name;
     }
 }
